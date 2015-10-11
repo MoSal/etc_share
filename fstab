@@ -1,0 +1,37 @@
+# 
+# /etc/fstab: static file system information
+#
+# <file system>        <dir>         <type>    <options>          <dump> <pass>
+shm                    /dev/shm      tmpfs     nodev,nosuid        0      0
+#none                   /dev/pts      devpts    defaults            0      0
+debugfs                /sys/kernel/debug      debugfs    defaults            0      0
+
+#/dev/cdrom             /media/cd   auto    ro,user,noauto,unhide   0      0
+#/dev/dvd               /media/dvd  auto    ro,user,noauto,unhide   0      0
+#/dev/fd0               /media/fl   auto    user,noauto             0      0
+
+/dev/disk/by-label/SWAP swap swap defaults 0 0
+/dev/disk/by-label/ARCH64 / ext4 defaults,noatime 0 1
+#/dev/disk/by-label/EXTERNAL /media/EXTERNAL ext4 defaults,noatime,noauto 0 1
+/dev/disk/by-label/8GB /media/8GB ext4 defaults,noatime 0 0
+/dev/disk/by-label/STORAGE /media/STORAGE xfs defaults,noatime 0 0
+none	/tmp		tmpfs	defaults	0	0
+none	/small		tmpfs	size=1048576	0	0
+none	/var/tmp	tmpfs	defaults	0	0
+none	/vim		tmpfs	defaults	0	0
+
+# NFS rbinds
+/media/STORAGE /srv/nfs4/STORAGE  none   rbind   0   0
+/tmp2 /srv/nfs4/tmp2  none   rbind   0   0
+/tmp /srv/nfs4/tmp  none   rbind   0   0
+#/media/EXTERNAL /srv/nfs4/EXTERNAL  none   rbind   0   0
+/media/E2 /srv/nfs4/E2  none   rbind   0   0
+/media/E3 /srv/nfs4/E3  none   rbind   0   0
+/media/E4 /srv/nfs4/E4  none   rbind   0   0
+
+# nfs mounts available as http
+/srv/nfs4 /srv/http/nfs4 none rbind
+
+#/media/E4/wiki/testwiki /srv/http/testwiki none rbind
+/media/E4/wiki/site /srv/http/site none rbind
+#/media/E4/wiki/testwiki.git /srv/git/testwiki.git none rbind

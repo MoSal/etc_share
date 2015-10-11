@@ -1,0 +1,53 @@
+#!/bin/bash
+#
+# /etc/rc.local: Local multi-user startup script.
+#
+#echo ondemand > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor &
+#echo ondemand > /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor &
+#echo low > /sys/class/drm/card0/device/power_profile &
+
+# alsa on the network
+modprobe snd-aloop
+
+# init zram
+/home/user64/bin/zram_init
+sysctl vm.swappiness=100 # default: 60
+
+# MMC swap
+swapon /dev/disk/by-label/MMC_SWAP -p5
+
+# Allow users to use perf freely
+sysctl kernel.perf_event_paranoid=-1 # default is 1
+
+# Add ::2 as a 2nd ip addr to lo
+ip -6 addr add ::2/128 dev lo
+ip -6 addr add ::3/128 dev lo
+ip -6 addr add ::4/128 dev lo
+ip addr add 127.0.0.2/8 dev lo
+
+# set core_pattern (does not work in sysctl.conf , maybe because it needs to be done late)
+sysctl kernel.core_pattern="|/home/user64/bin/zcore /tmp2/%e_%u_%t.core"
+sysctl kernel.core_uses_pid="0"
+
+# Mouting here, having this in fstab seems to cause trouble in startup if EXTERNAL is not connected
+#mount /dev/disk/by-label/EXTERNAL /media/EXTERNAL || echo mounting EXTERNAL failed 1>&2
+mount /dev/disk/by-label/E2 /media/E2 || echo mounting E2 failed 1>&2
+mount /dev/disk/by-label/E3 /media/E3 || echo mounting E3 failed 1>&2
+mount /dev/disk/by-label/E4 /media/E4 || echo mounting E4 failed 1>&2
+mount -a || echo late mount -a failed 1>&2
+
+# BTRFS
+#mount /dev/disk/by-label/BTRFS /BTRFS -o rw,noatime,compress-force=zlib,autodefrag
+
+# A dedicated daemon seemed silly, so we just do it here
+privoxy --user privoxy.privoxy /etc/privoxy/config.tor
+
+# try nntp late , wlan0 should be up then
+#(sleep 60 && ntpd -s) &
+
+# force cache /var/lib/pacman/local
+/home/user64/bin/vm.sh &
+
+# DPM
+echo performance > /sys/class/drm/card0/device/power_dpm_state # default: balanced
+echo high > /sys/class/drm/card0/device/power_dpm_force_performance_level # default: auto
