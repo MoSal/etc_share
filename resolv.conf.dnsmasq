@@ -1,0 +1,6 @@
+# Google nameserver for eztv.it
+#nameserver 8.8.8.8
+
+# OpenDNS nameservers
+nameserver 208.67.222.222
+nameserver 208.67.220.220
